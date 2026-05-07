@@ -69,20 +69,20 @@ const Modal = ({
            </p>
         </div>
 
-        <div className="p-6 bg-slate-50 flex items-center gap-3">
-           <Button 
-             variant="ghost" 
-             onClick={onClose}
-             className="flex-1 rounded-2xl h-12 font-bold text-slate-600 hover:bg-white"
-           >
-              {cancelText}
-           </Button>
+        <div className="p-8 bg-slate-50 flex items-center gap-4 flex-row-reverse">
            <Button 
              variant={type === 'danger' ? 'danger' : 'primary'}
              onClick={onConfirm}
-             className="flex-1 rounded-2xl h-12 font-bold shadow-lg"
+             className="flex-1 rounded-[20px] h-14 font-black uppercase text-[10px] tracking-widest shadow-xl transition-all"
            >
               {confirmText}
+           </Button>
+           <Button 
+             variant="ghost" 
+             onClick={onClose}
+             className="flex-1 rounded-[20px] h-14 font-black uppercase text-[10px] tracking-widest text-slate-500 hover:bg-white transition-all shadow-sm"
+           >
+              {cancelText}
            </Button>
         </div>
       </div>

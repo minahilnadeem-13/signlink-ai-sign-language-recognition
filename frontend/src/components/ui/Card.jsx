@@ -10,7 +10,7 @@ const Card = ({ children, className, ...props }) => {
   return (
     <div 
       className={cn(
-        "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden",
+        "glass-card rounded-2xl overflow-hidden hover-lift animate-slide-up",
         className
       )} 
       {...props}

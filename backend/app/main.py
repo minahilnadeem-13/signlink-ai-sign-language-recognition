@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.routes import auth, recognize, gestures, chat, tools, translations, dashboard, history
+from app.routes import auth, recognize, gestures, chat, tools, translations, dashboard, history, contact
 from app.config import settings
 from app.database import init_db
 import os
@@ -48,6 +48,7 @@ app.include_router(chat.router, prefix=f"{settings.API_V1_STR}/chat", tags=["cha
 app.include_router(translations.router, prefix=f"{settings.API_V1_STR}/translations", tags=["translations"])
 app.include_router(dashboard.router, prefix=f"{settings.API_V1_STR}/dashboard", tags=["dashboard"])
 app.include_router(history.router, prefix=f"{settings.API_V1_STR}/history", tags=["history"])
+app.include_router(contact.router, prefix=f"{settings.API_V1_STR}/contact", tags=["contact"])
 app.include_router(tools.router, prefix=f"{settings.API_V1_STR}", tags=["tools"])
 
 @app.get("/api/health")

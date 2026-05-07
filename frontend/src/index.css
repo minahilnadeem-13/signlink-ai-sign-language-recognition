@@ -1,39 +1,135 @@
 @import "tailwindcss";
 
 @theme {
-  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
   
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
+  --color-brand-50: #f0f7ff;
+  --color-brand-100: #e0effe;
+  --color-brand-200: #bae0fd;
+  --color-brand-300: #7cc7fb;
+  --color-brand-400: #38a9f8;
+  --color-brand-500: #0e8ce9;
+  --color-brand-600: #026dc7;
+  --color-brand-700: #0357a1;
+  --color-brand-800: #074a85;
+  --color-brand-900: #0c3f6e;
   
-  --color-accent-50: #f0fdf4;
-  --color-accent-500: #22c55e;
-  --color-accent-600: #16a34a;
+  --color-accent-50: #fdf2f8;
+  --color-accent-500: #ec4899;
+  --color-accent-600: #db2777;
+
+  /* Glassmorphism Variables */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-inter antialiased;
+    @apply bg-slate-50 text-slate-900 font-inter antialiased overflow-x-hidden;
+    background: radial-gradient(circle at 0% 0%, #f8fafc 0%, #f1f5f9 100%);
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-outfit font-bold;
+    @apply font-outfit font-bold tracking-tight;
   }
 }
 
-.glass {
-  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+@layer components {
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-nav {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, var(--color-brand-600) 0%, var(--color-brand-500) 50%, var(--color-brand-400) 100%);
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10;
+  }
 }
 
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse-soft {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
+.animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
+.animate-slide-in-right { animation: slide-in-right 0.6s ease-out forwards; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+}
+
+/* Glass Background Blobs */
+.bg-blob {
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.bg-blob-1 {
+  background: var(--color-brand-100);
+  top: -10%;
+  left: -10%;
+  animation: float 20s infinite alternate;
+}
+
+.bg-blob-2 {
+  background: var(--color-accent-50);
+  bottom: -10%;
+  right: -10%;
+  animation: float 25s infinite alternate-reverse;
 }

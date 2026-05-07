@@ -19,23 +19,23 @@ const Navbar = () => {
   return (
     <nav 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4",
-        isScrolled ? "bg-white/80 backdrop-blur-md border-b border-slate-200 py-3" : "bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4",
+        isScrolled ? "glass-nav py-3" : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="bg-brand-600 p-1.5 rounded-lg text-white">
+        <Link to="/" className="flex items-center gap-2 group animate-fade-in">
+          <div className="premium-gradient p-2 rounded-xl text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
             <Hand size={20} />
           </div>
-          <span className="text-xl font-bold text-slate-900">SignLink</span>
+          <span className="text-2xl font-black text-slate-900 tracking-tighter">SignLink</span>
         </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Features</a>
           <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">How it Works</a>
-          <a href="#about" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">About</a>
+          <Link to="/contact" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Contact</Link>
         </div>
 
         <div className="hidden md:flex items-center gap-4">
@@ -61,7 +61,6 @@ const Navbar = () => {
         <div className="absolute top-full left-0 right-0 bg-white border-b border-slate-200 p-6 md:hidden flex flex-col gap-4 shadow-xl animate-in slide-in-from-top duration-300">
           <a href="#features" className="text-lg font-medium text-slate-600">Features</a>
           <a href="#how-it-works" className="text-lg font-medium text-slate-600">How it Works</a>
-          <a href="#about" className="text-lg font-medium text-slate-600">About</a>
           <hr className="border-slate-100" />
           <div className="flex flex-col gap-3">
             <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>

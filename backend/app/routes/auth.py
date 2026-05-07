@@ -71,6 +71,37 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     access_token = create_access_token(user.email)
     return {"access_token": access_token, "token_type": "bearer"}
 
+@router.post("/verify-email")
+def verify_email(data: dict, db: Session = Depends(get_db)):
+    email = data.get("email")
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Email not found")
+    return {"message": "Email verified"}
+
+@router.post("/reset-password")
+def reset_password(data: dict, db: Session = Depends(get_db)):
+    email = data.get("email")
+    new_password = data.get("password")
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.password_hash = get_password_hash(new_password)
+    db.commit()
+    return {"message": "Password updated successfully"}
+
+@router.put("/update", response_model=UserResponse)
+def update_user(data: dict, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if "name" in data:
+        current_user.name = data["name"]
+    if "language_preference" in data:
+        current_user.language_preference = data["language_preference"]
+    
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user

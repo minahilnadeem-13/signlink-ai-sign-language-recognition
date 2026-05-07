@@ -14,12 +14,12 @@ const Button = ({
   ...props 
 }) => {
   const variants = {
-    primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-md hover:shadow-lg',
-    secondary: 'bg-white text-brand-700 border border-brand-200 hover:bg-brand-50 shadow-sm',
-    accent: 'bg-accent-500 text-white hover:bg-accent-600 shadow-md hover:shadow-lg',
-    ghost: 'bg-transparent text-slate-600 hover:bg-slate-100',
-    outline: 'bg-transparent text-brand-600 border border-brand-600 hover:bg-brand-50',
-    danger: 'bg-red-500 text-white hover:bg-red-600 shadow-md',
+    primary: 'premium-gradient text-white hover:brightness-110 shadow-lg shadow-brand-500/20',
+    secondary: 'glass-card text-brand-700 hover:bg-white/90',
+    accent: 'bg-accent-500 text-white hover:bg-accent-600 shadow-lg shadow-accent-500/20',
+    ghost: 'bg-transparent text-slate-600 hover:bg-slate-200/50 backdrop-blur-sm',
+    outline: 'bg-transparent text-brand-600 border-2 border-brand-500/50 hover:border-brand-500 hover:bg-brand-50/50',
+    danger: 'bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20',
   };
 
   const sizes = {

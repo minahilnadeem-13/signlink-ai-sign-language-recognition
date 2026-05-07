@@ -43,6 +43,9 @@ export const authAPI = {
     });
   },
   getMe: () => api.get('/auth/me'),
+  verifyEmail: (email) => api.post('/auth/verify-email', { email }),
+  resetPassword: (email, password) => api.post('/auth/reset-password', { email, password }),
+  updateProfile: (data) => api.put('/auth/update', data),
 };
 
 export const recognitionAPI = {
@@ -87,6 +90,12 @@ export const historyAPI = {
 
 export const healthAPI = {
   check: () => api.get('/health'),
+};
+
+export const contactAPI = {
+  sendMessage: (data) => api.post('/contact/send', data),
+  getMessages: () => api.get('/contact/all'),
+  updateStatus: (id, status) => api.put(`/contact/${id}/status`, { status }),
 };
 
 export default api;

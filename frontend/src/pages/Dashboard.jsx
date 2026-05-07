@@ -20,22 +20,25 @@ import Card, { CardContent, CardHeader } from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { healthAPI, authAPI, dashboardAPI, historyAPI } from '../services/api';
 
-const StatCard = ({ icon: Icon, label, value, trend, color }) => (
-  <Card className="border-none shadow-sm hover:shadow-md transition-shadow">
-    <CardContent className="p-6">
+const StatCard = ({ icon: Icon, label, value, trend, color, delay = 0 }) => (
+  <Card 
+    className="border-none hover-lift animate-slide-up"
+    style={{ animationDelay: `${delay}ms` }}
+  >
+    <CardContent className="p-8">
       <div className="flex items-start justify-between">
-        <div className={`p-3 rounded-2xl ${color} bg-opacity-10 text-${color.split('-')[1]}-600`}>
-          <Icon size={24} />
+        <div className={`p-4 rounded-[1.5rem] ${color} bg-opacity-10 text-brand-600 shadow-inner`}>
+          <Icon size={28} />
         </div>
         {trend && (
-          <div className="text-[10px] font-black bg-slate-50 text-slate-400 px-2 py-1 rounded-lg uppercase tracking-widest">
+          <div className="text-[10px] font-black glass-card px-3 py-1.5 rounded-full uppercase tracking-widest text-slate-500 border-transparent">
             {trend}
           </div>
         )}
       </div>
-      <div className="mt-4">
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
-        <h3 className="text-3xl font-black text-slate-900 mt-1">{value || 0}</h3>
+      <div className="mt-6">
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{label}</p>
+        <h3 className="text-4xl font-black text-slate-900 mt-2 tracking-tight">{value || 0}</h3>
       </div>
     </CardContent>
   </Card>
@@ -113,13 +116,14 @@ const UserDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <StatCard 
           icon={History} 
           label="Total Translations" 
           value={stats.total_recognitions} 
           trend="Lifetime"
           color="bg-brand-500"
+          delay={0}
         />
         <StatCard 
           icon={Activity} 
@@ -127,50 +131,53 @@ const UserDashboard = () => {
           value={stats.today_recognitions} 
           trend="Last 24h"
           color="bg-emerald-500"
+          delay={100}
         />
         <StatCard 
           icon={Type} 
           label="Sentences Formed" 
           value={stats.total_sentences} 
           color="bg-purple-500"
+          delay={200}
         />
         <StatCard 
           icon={Hand} 
           label="Custom Gestures" 
           value={stats.user_gestures} 
           color="bg-amber-500"
+          delay={300}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           {/* Main Action Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div className="group relative overflow-hidden bg-brand-600 rounded-3xl p-8 text-white shadow-xl shadow-brand-100 hover:scale-[1.02] transition-transform cursor-pointer" onClick={() => navigate('/translate')}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div className="group relative overflow-hidden premium-gradient rounded-[2.5rem] p-10 text-white shadow-2xl shadow-brand-500/30 hover:scale-[1.02] transition-all duration-500 cursor-pointer animate-slide-up" style={{ animationDelay: '400ms' }} onClick={() => navigate('/translate')}>
                 <div className="relative z-10">
-                   <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
-                      <Languages size={24} />
+                   <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 shadow-xl">
+                      <Languages size={32} />
                    </div>
-                   <h3 className="text-2xl font-black mb-2">Live Translator</h3>
-                   <p className="text-brand-100 text-sm mb-8 leading-relaxed">Access real-time sign language recognition and sentence assembly tools.</p>
-                   <div className="flex items-center font-bold text-sm">
-                      Open Module <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                   <h3 className="text-3xl font-black mb-3 tracking-tight">Live Translator</h3>
+                   <p className="text-brand-50 text-base mb-10 leading-relaxed font-medium">Access real-time sign language recognition and sentence assembly tools.</p>
+                   <div className="flex items-center font-black text-sm uppercase tracking-widest">
+                      Launch Module <ChevronRight size={20} className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                    </div>
                 </div>
-                <div className="absolute -right-8 -bottom-8 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
+                <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
              </div>
-             <div className="group relative overflow-hidden bg-slate-900 rounded-3xl p-8 text-white shadow-xl hover:scale-[1.02] transition-transform cursor-pointer" onClick={() => navigate('/training')}>
+             <div className="group relative overflow-hidden bg-slate-950 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-slate-900/40 hover:scale-[1.02] transition-all duration-500 cursor-pointer animate-slide-up" style={{ animationDelay: '500ms' }} onClick={() => navigate('/training')}>
                 <div className="relative z-10">
-                   <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
-                      <Hand size={24} />
+                   <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 shadow-xl">
+                      <Hand size={32} />
                    </div>
-                   <h3 className="text-2xl font-black mb-2">Gesture Training</h3>
-                   <p className="text-slate-400 text-sm mb-8 leading-relaxed">Map custom hand landmarks to the database for personalized recognition.</p>
-                   <div className="flex items-center font-bold text-sm">
-                      Open Module <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                   <h3 className="text-3xl font-black mb-3 tracking-tight">Gesture Training</h3>
+                   <p className="text-slate-400 text-base mb-10 leading-relaxed font-medium">Map custom hand landmarks to the database for personalized recognition.</p>
+                   <div className="flex items-center font-black text-sm uppercase tracking-widest text-brand-400">
+                      Launch Module <ChevronRight size={20} className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                    </div>
                 </div>
-                <div className="absolute -right-8 -bottom-8 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
+                <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-brand-600/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
              </div>
           </div>
 

@@ -1,4 +1,5 @@
 import base64
+import os
 import math
 import time
 from collections import Counter, defaultdict, deque
@@ -6,6 +7,9 @@ from collections import Counter, defaultdict, deque
 import cv2
 import mediapipe as mp
 import numpy as np
+import torch
+import torch.nn.functional as F
+from app.models.cnn_model import SignCNN
 
 
 class GestureService:
@@ -27,6 +31,26 @@ class GestureService:
         self.count_cooldown = 1.2
         self.min_count_confidence = 0.78
 
+        # CNN Model Initialization
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.cnn_model = SignCNN().to(self.device)
+        self.model_loaded = False
+        try:
+            model_path = os.path.join(os.path.dirname(__file__), "..", "..", "models", "sign_mnist_cnn.pth")
+            if os.path.exists(model_path):
+                self.cnn_model.load_state_dict(torch.load(model_path, map_location=self.device))
+                self.cnn_model.eval()
+                self.model_loaded = True
+                print("Sign MNIST CNN loaded successfully.")
+        except Exception as e:
+            print(f"Error loading CNN model: {e}")
+
+        self.mnist_mapping = {
+            0: "A", 1: "B", 2: "C", 3: "D", 4: "E", 5: "F", 6: "G", 7: "H", 8: "I",
+            10: "K", 11: "L", 12: "M", 13: "N", 14: "O", 15: "P", 16: "Q", 17: "R",
+            18: "S", 19: "T", 20: "U", 21: "V", 22: "W", 23: "X", 24: "Y"
+        }
+
         self.dictionary = {
             "Hello": "سلام",
             "Hi": "ہیلو",
@@ -37,20 +61,11 @@ class GestureService:
             "Stop": "رکیں",
             "OK": "ٹھیک ہے",
             "I Love You": "میں تم سے محبت کرتا ہوں",
-            "A": "اے",
-            "B": "بی",
-            "C": "سی",
-            "D": "ڈی",
-            "E": "ای",
-            "F": "ایف",
-            "L": "ایل",
-            "Y": "وائی",
-            "0": "۰",
-            "1": "۱",
-            "2": "۲",
-            "3": "۳",
-            "4": "۴",
-            "5": "۵",
+            "A": "اے", "B": "بی", "C": "سی", "D": "ڈی", "E": "ای", "F": "ایف",
+            "G": "جی", "H": "ایچ", "I": "آئی", "K": "کے", "L": "ایل", "M": "ایم",
+            "N": "این", "O": "او", "P": "پی", "Q": "کیو", "R": "آر", "S": "ایس",
+            "T": "ٹی", "U": "یو", "V": "وی", "W": "ڈبلیو", "X": "ایکس", "Y": "وائی",
+            "0": "۰", "1": "۱", "2": "۲", "3": "۳", "4": "۴", "5": "۵",
         }
         self.predefined_gestures = [
             "Hello",
@@ -62,6 +77,7 @@ class GestureService:
             "OK",
             "Thank You",
             "I Love You",
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"
         ]
 
     def decode_image(self, base64_string):
@@ -142,6 +158,51 @@ class GestureService:
             "index_tip_x": lm[8]["x"],
         }
 
+    def _predict_cnn(self, hand_data, image):
+        if not self.model_loaded or image is None:
+            return []
+
+        try:
+            h, w, _ = image.shape
+            lm = hand_data["landmarks"] if isinstance(hand_data, dict) else hand_data
+            
+            # Get bounding box from landmarks
+            xs = [p["x"] for p in lm]
+            ys = [p["y"] for p in lm]
+            x1, y1 = int(min(xs) * w), int(min(ys) * h)
+            x2, y2 = int(max(xs) * w), int(max(ys) * h)
+            
+            # Add padding
+            padding = 20
+            x1, y1 = max(0, x1 - padding), max(0, y1 - padding)
+            x2, y2 = min(w, x2 + padding), min(h, y2 + padding)
+            
+            if x2 <= x1 or y2 <= y1:
+                return []
+
+            # Crop and preprocess
+            hand_crop = image[y1:y2, x1:x2]
+            gray = cv2.cvtColor(hand_crop, cv2.COLOR_BGR2GRAY)
+            resized = cv2.resize(gray, (28, 28))
+            normalized = resized / 255.0
+            tensor = torch.tensor(normalized, dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(self.device)
+            
+            with torch.no_grad():
+                output = self.cnn_model(tensor)
+                probs = F.softmax(output, dim=1)
+                conf, pred = torch.max(probs, 1)
+                conf = conf.item()
+                label_id = pred.item()
+                
+            if label_id in self.mnist_mapping and conf > 0.45:
+                label = self.mnist_mapping[label_id]
+                return [self._score_candidate(label, "alphabet", conf * 0.95)] # Slight penalty vs rules
+            
+            return []
+        except Exception as e:
+            print(f"CNN Prediction error: {e}")
+            return []
+
     def _score_candidate(self, prediction, gtype, score):
         return {
             "prediction": prediction,
@@ -180,7 +241,7 @@ class GestureService:
 
         return min(0.99, 0.6 + horizontal_span * 1.8 + direction_changes * 0.08)
 
-    def recognize_with_candidates(self, hand_data):
+    def recognize_with_candidates(self, hand_data, image=None):
         if not hand_data:
             return []
 
@@ -190,6 +251,7 @@ class GestureService:
         thumb, index, middle, ring, pinky = fingers
         candidates = []
 
+        # 1. Rule-based recognition
         open_count = sum(fingers)
         self._append_motion("Hello" if open_count >= 4 else "Unknown", features)
 
@@ -235,6 +297,10 @@ class GestureService:
 
         if open_count >= 4 and features["wrist_to_middle"] > 1.45 and features["fingertips_above_wrist"] >= 3:
             candidates.append(self._score_candidate("Thank You", "word", 0.83))
+
+        # 2. CNN-based alphabet recognition
+        cnn_results = self._predict_cnn(hand_data, image)
+        candidates.extend(cnn_results)
 
         if not candidates:
             return []

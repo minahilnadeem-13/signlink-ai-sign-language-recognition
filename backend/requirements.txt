@@ -16,3 +16,6 @@ pydantic[email]
 pydantic-settings
 pyasn1<0.5.0
 scipy<1.14.0
+kagglehub
+torch
+pandas

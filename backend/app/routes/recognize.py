@@ -44,7 +44,7 @@ def recognize_frame(
         
         hand_data = all_hands[0]
         model_candidates = recognition_service.predict(hand_data, top_k=3)
-        heuristic_candidates = gesture_service.recognize_with_candidates(hand_data)
+        heuristic_candidates = gesture_service.recognize_with_candidates(hand_data, image)
         merged_candidates = []
         seen = set()
         for candidate in model_candidates + heuristic_candidates:
@@ -144,7 +144,7 @@ def recognize_frame(
             "handDetected": True,
             "is_new_detection": is_new,
             "method": "mediapipe_rule_based_probability",
-            "model_loaded": recognition_service.get_model_status()["model_loaded"],
+            "model_loaded": recognition_service.get_model_status()["model_loaded"] or gesture_service.model_loaded,
             "timestamp": datetime.utcnow().isoformat()
         }
     except Exception as e:

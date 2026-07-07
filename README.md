@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SignLink: AI-Powered Sign Language Translator
 
 This repository contains both the frontend and backend for the SignLink project.
@@ -17,3 +18,7 @@ This repository contains both the frontend and backend for the SignLink project.
 
 
 
+=======
+# signlink-ai-sign-language-recognition
+AI-powered sign language recognition system using Flutter and computer vision to improve accessibility and communication.
+>>>>>>> 2ac5b832aaad83508aa0e1d57debd28a405eda88

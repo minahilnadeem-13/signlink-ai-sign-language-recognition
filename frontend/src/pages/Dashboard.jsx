@@ -12,13 +12,26 @@ import {
   Activity,
   Type,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  Zap,
+  CheckCircle2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
 import Card, { CardContent, CardHeader } from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { healthAPI, authAPI, dashboardAPI, historyAPI } from '../services/api';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
 
 const StatCard = ({ icon: Icon, label, value, trend, color, delay = 0 }) => (
   <Card 
@@ -134,20 +147,53 @@ const UserDashboard = () => {
           delay={100}
         />
         <StatCard 
-          icon={Type} 
-          label="Sentences Formed" 
-          value={stats.total_sentences} 
+          icon={Zap} 
+          label="AI Enhancements" 
+          value={stats.ai_enhancements} 
           color="bg-purple-500"
           delay={200}
         />
         <StatCard 
-          icon={Hand} 
-          label="Custom Gestures" 
-          value={stats.user_gestures} 
+          icon={CheckCircle2} 
+          label="Gestures Mastered" 
+          value={stats.mastered_gestures} 
           color="bg-amber-500"
           delay={300}
         />
       </div>
+
+      {/* Confidence Trend Chart */}
+      <Card className="mb-12 border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
+        <CardHeader className="p-8 border-b border-slate-50 flex items-center justify-between">
+           <div>
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Neural Confidence Analytics</h3>
+              <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest">Aggregate stability of gesture inferences over time</p>
+           </div>
+           <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></div>
+              <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">Live Engine Score: {stats.avg_confidence}%</span>
+           </div>
+        </CardHeader>
+        <CardContent className="p-8 h-[300px]">
+           <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats.confidence_trend || []}>
+                 <defs>
+                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                       <stop offset="5%" stopColor="#0e8ce9" stopOpacity={0.3}/>
+                       <stop offset="95%" stopColor="#0e8ce9" stopOpacity={0}/>
+                    </linearGradient>
+                 </defs>
+                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} dy={10} />
+                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} dx={-10} domain={[0, 100]} />
+                 <Tooltip 
+                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 800, fontSize: '12px' }}
+                 />
+                 <Area type="monotone" dataKey="value" stroke="#0e8ce9" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
+              </AreaChart>
+           </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
@@ -178,6 +224,35 @@ const UserDashboard = () => {
                    </div>
                 </div>
                 <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-brand-600/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div className="group relative overflow-hidden bg-rose-600 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-rose-500/30 hover:scale-[1.02] transition-all duration-500 cursor-pointer animate-slide-up" style={{ animationDelay: '600ms' }} onClick={() => navigate('/emergency')}>
+                <div className="relative z-10">
+                   <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 shadow-xl">
+                      <ShieldCheck size={32} />
+                   </div>
+                   <h3 className="text-3xl font-black mb-3 tracking-tight">Emergency Mode</h3>
+                   <p className="text-rose-100 text-base mb-10 leading-relaxed font-medium">Quick communication bridge for medical or emergency situations.</p>
+                   <div className="flex items-center font-black text-sm uppercase tracking-widest">
+                      Enter Emergency Mode <ChevronRight size={20} className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
+                   </div>
+                </div>
+                <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+             </div>
+             <div className="group relative overflow-hidden bg-emerald-600 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-emerald-500/30 hover:scale-[1.02] transition-all duration-500 cursor-pointer animate-slide-up" style={{ animationDelay: '700ms' }} onClick={() => navigate('/learning')}>
+                <div className="relative z-10">
+                   <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 shadow-xl">
+                      <Activity size={32} />
+                   </div>
+                   <h3 className="text-3xl font-black mb-3 tracking-tight">Learning Assistant</h3>
+                   <p className="text-emerald-100 text-base mb-10 leading-relaxed font-medium">Personalized AI sessions to master sign language gestures.</p>
+                   <div className="flex items-center font-black text-sm uppercase tracking-widest">
+                      Start Learning <ChevronRight size={20} className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
+                   </div>
+                </div>
+                <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
              </div>
           </div>
 

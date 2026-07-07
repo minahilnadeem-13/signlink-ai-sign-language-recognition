@@ -34,7 +34,8 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Features</a>
-          <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">How it Works</a>
+          <Link to="/learning" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Learning</Link>
+          <Link to="/emergency" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors text-rose-600">Emergency</Link>
           <Link to="/contact" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Contact</Link>
         </div>
 

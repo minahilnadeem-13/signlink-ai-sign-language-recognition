@@ -4,6 +4,8 @@ import LandingPage from './pages/LandingPage'
 import Dashboard from './pages/Dashboard'
 import LiveTranslator from './pages/LiveTranslator'
 import Training from './pages/Training'
+import Emergency from './pages/Emergency'
+import Learning from './pages/Learning'
 
 import History from './pages/History'
 import Settings from './pages/Settings'
@@ -70,6 +72,8 @@ function App() {
 
         <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/emergency" element={<ProtectedRoute><Emergency /></ProtectedRoute>} />
+        <Route path="/learning" element={<ProtectedRoute><Learning /></ProtectedRoute>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />

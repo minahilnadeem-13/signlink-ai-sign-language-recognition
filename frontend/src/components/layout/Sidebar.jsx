@@ -56,16 +56,16 @@ const Sidebar = () => {
 
   const userMenuItems = [
     { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
-    { icon: Languages, label: 'Live Translator', path: '/translate' },
-    { icon: Target, label: 'Custom Training', path: '/training' },
-    { icon: History, label: 'History Logs', path: '/history' },
+    { icon: Languages, label: 'Translator', path: '/translate' },
+    { icon: Target, label: 'Teach AI', path: '/training' },
+    { icon: History, label: 'Past Work', path: '/history' },
   ];
 
   const adminMenuItems = [
     { icon: ShieldCheck, label: 'Admin Panel', path: '/admin' },
-    { icon: Users, label: 'User Management', path: '/admin/users' },
-    { icon: Activity, label: 'System Health', path: '/admin/health' },
-    { icon: Mail, label: 'Inquiries', path: '/admin' },
+    { icon: Users, label: 'User List', path: '/admin/users' },
+    { icon: Activity, label: 'System Status', path: '/admin/health' },
+    { icon: Mail, label: 'Messages', path: '/admin' },
   ];
 
   const handleLogout = () => {
@@ -123,11 +123,11 @@ const Sidebar = () => {
       isOpen={isLogoutModalOpen}
       onClose={() => setIsLogoutModalOpen(false)}
       onConfirm={handleLogout}
-      title="Terminate Session?"
-      message="Are you sure you want to log out? You will need to sign in again to access the translator."
+      title="Logout?"
+      message="Are you sure you want to log out? You will need to sign in again to use the translator."
       type="danger"
-      confirmText="Yes, Log Out"
-      cancelText="Stay Logged In"
+      confirmText="Yes, Logout"
+      cancelText="Cancel"
     />
   </>
 );

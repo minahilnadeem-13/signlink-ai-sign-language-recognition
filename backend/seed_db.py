@@ -9,7 +9,7 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.database import Base, engine, SessionLocal
-from app.models.db_models import User, Gesture, ChatMessage, Translation
+from app.models.db_models import User, Gesture, ChatMessage, Translation, AIConversation, LearningProgress, EmergencyLog, ConfidenceLog
 
 def get_password_hash(password):
     password_bytes = password.encode('utf-8')
@@ -31,6 +31,10 @@ def seed():
         db.query(ChatMessage).delete()
         db.query(Gesture).delete()
         db.query(Translation).delete()
+        db.query(AIConversation).delete()
+        db.query(LearningProgress).delete()
+        db.query(EmergencyLog).delete()
+        db.query(ConfidenceLog).delete()
         db.commit() # Commit these first
         
         # Now we can safely delete users

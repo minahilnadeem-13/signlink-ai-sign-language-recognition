@@ -7,8 +7,8 @@ import {
   Search, 
   Trash2, 
   Settings, 
-  BarChart, 
-  PieChart,
+  BarChart as BarChartIcon, 
+  PieChart as PieChartIcon,
   HardDrive,
   Globe,
   Lock,
@@ -26,8 +26,22 @@ import {
 import AppLayout from '../layouts/AppLayout';
 import Card, { CardContent, CardHeader } from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import { dashboardAPI, healthAPI, contactAPI } from '../services/api';
+import { dashboardAPI, healthAPI, contactAPI, adminAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  BarChart as RechartsBarChart,
+  Bar,
+  Cell,
+  PieChart as RechartsPieChart,
+  Pie
+} from 'recharts';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -38,6 +52,12 @@ const AdminDashboard = () => {
   });
   const [health, setHealth] = useState({ status: 'unknown', uptime: '0s' });
   const [messages, setMessages] = useState([]);
+  const [systemStats, setSystemStats] = useState({
+    user_growth: [],
+    ai_monitoring: { total: 0, failed: 0, success_rate: 100 },
+    neural_health: { avg_accuracy: 0, emergency_load: 0 },
+    recent_detections: []
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,14 +68,16 @@ const AdminDashboard = () => {
 
   const fetchAdminData = async () => {
     try {
-      const [statsRes, healthRes, msgRes] = await Promise.all([
+      const [statsRes, healthRes, msgRes, adminRes] = await Promise.all([
         dashboardAPI.getStats(),
         healthAPI.check(),
-        contactAPI.getMessages()
+        contactAPI.getMessages(),
+        adminAPI.getSystemStats()
       ]);
       setStats(statsRes.data);
       setHealth(healthRes.data);
       setMessages(msgRes.data);
+      setSystemStats(adminRes.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -84,8 +106,8 @@ const AdminDashboard = () => {
                </div>
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Secure Admin Domain</span>
             </div>
-            <h2 className="text-4xl font-black text-slate-900 tracking-tight">System Infrastructure</h2>
-            <p className="text-slate-500 mt-1 font-medium">Platform-wide orchestration of neural nodes, user databases, and system health.</p>
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight">System Status</h2>
+            <p className="text-slate-500 mt-1 font-medium">Manage users, check AI speed, and read messages.</p>
          </div>
          <div className="bg-white border border-slate-100 px-8 py-4 rounded-[2rem] flex items-center gap-4 shadow-2xl shadow-slate-200/50">
             <div className="flex flex-col text-right">
@@ -112,7 +134,7 @@ const AdminDashboard = () => {
             <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden">
                <CardHeader className="bg-slate-50/50 border-b border-slate-100 p-8">
                   <div className="flex items-center justify-between">
-                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Platform Inquiries</h3>
+                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">User Messages</h3>
                      <MessageSquare size={18} className="text-brand-500" />
                   </div>
                </CardHeader>
@@ -169,7 +191,7 @@ const AdminDashboard = () => {
 
             <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden">
                <CardHeader className="bg-slate-50/50 border-b border-slate-100 p-8">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Distribution Vectors</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Usage Stats</h3>
                </CardHeader>
                <CardContent className="p-10">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
@@ -177,6 +199,77 @@ const AdminDashboard = () => {
                      <MetricBox label="Numerics" value={stats.stats_by_type?.numbers || 0} percentage="25%" color="bg-amber-500" textColor="text-amber-600" />
                      <MetricBox label="Lexicon" value={stats.stats_by_type?.words || 0} percentage="30%" color="bg-emerald-500" textColor="text-emerald-600" />
                   </div>
+               </CardContent>
+            </Card>
+
+            {/* AI Health Monitoring */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+               <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white">
+                  <CardHeader className="p-8 border-b border-slate-50 flex items-center justify-between">
+                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">User Growth Trend</h3>
+                     <TrendingUp size={16} className="text-indigo-500" />
+                  </CardHeader>
+                  <CardContent className="p-8 h-[250px]">
+                     <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={systemStats.user_growth}>
+                           <XAxis dataKey="date" hide />
+                           <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', fontWeight: 800 }} />
+                           <Area type="monotone" dataKey="count" stroke="#6366f1" fill="#6366f1" fillOpacity={0.1} strokeWidth={3} />
+                        </AreaChart>
+                     </ResponsiveContainer>
+                  </CardContent>
+               </Card>
+
+               <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white">
+                  <CardHeader className="p-8 border-b border-slate-50 flex items-center justify-between">
+                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Neural Accuracy (Global)</h3>
+                     <Zap size={16} className="text-brand-500" />
+                  </CardHeader>
+                  <CardContent className="p-8 flex flex-col items-center justify-center">
+                     <div className="relative w-40 h-40 flex items-center justify-center">
+                        <svg className="w-full h-full -rotate-90">
+                           <circle cx="80" cy="80" r="70" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
+                           <circle cx="80" cy="80" r="70" fill="transparent" stroke="#0e8ce9" strokeWidth="12" strokeDasharray="440" strokeDashoffset={440 - (440 * systemStats.neural_health.avg_accuracy) / 100} strokeLinecap="round" className="transition-all duration-1000" />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                           <span className="text-4xl font-black text-slate-900">{systemStats.neural_health.avg_accuracy}%</span>
+                           <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Confidence Avg</span>
+                        </div>
+                     </div>
+                     <div className="mt-6 flex gap-6">
+                        <div className="text-center">
+                           <p className="text-[10px] font-black text-slate-400 uppercase mb-1">AI Load</p>
+                           <p className="text-lg font-black text-slate-900">{systemStats.ai_monitoring.total}</p>
+                        </div>
+                        <div className="text-center">
+                           <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Success</p>
+                           <p className="text-lg font-black text-emerald-600">{systemStats.ai_monitoring.success_rate}%</p>
+                        </div>
+                     </div>
+                  </CardContent>
+               </Card>
+            </div>
+
+            <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white mt-8">
+               <CardHeader className="p-8 border-b border-slate-50 flex items-center justify-between">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">AI Speed (ms)</h3>
+                  <Activity size={16} className="text-emerald-500" />
+               </CardHeader>
+               <CardContent className="p-8 h-[250px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                     <RechartsBarChart data={[
+                        { name: '0s-1s', value: 400 },
+                        { name: '1s-2s', value: 300 },
+                        { name: '2s-5s', value: 200 },
+                        { name: '5s+', value: 100 },
+                     ]}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', fontWeight: 800 }} cursor={{ fill: '#f8fafc' }} />
+                        <Bar dataKey="value" fill="#10b981" radius={[10, 10, 0, 0]} />
+                     </RechartsBarChart>
+                  </ResponsiveContainer>
                </CardContent>
             </Card>
          </div>
@@ -204,10 +297,10 @@ const AdminDashboard = () => {
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Command Controls</h3>
                </CardHeader>
                <CardContent className="p-4 space-y-2">
-                  <AdminTool icon={Search} label="Neural Audit" />
-                  <AdminTool icon={Users} label="User Directory" />
-                  <AdminTool icon={PieChart} label="Data Synthesizer" />
-                  <AdminTool icon={Mail} label="Inquiry Management" />
+                  <AdminTool icon={Search} label="Check AI" />
+                  <AdminTool icon={Users} label="User List" />
+                  <AdminTool icon={PieChartIcon} label="Reports" />
+                  <AdminTool icon={Mail} label="Manage Messages" />
                   <div className="pt-4 px-2">
                      <Button variant="danger" className="w-full rounded-[1.5rem] py-6 font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-rose-100 border-none">
                         <Trash2 size={18} /> Purge Volatile Data

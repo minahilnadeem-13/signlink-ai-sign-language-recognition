@@ -17,7 +17,8 @@ import {
   Code,
   Zap,
   ShieldCheck,
-  Smartphone
+  Smartphone,
+  Activity
 } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Button from '../components/ui/Button';
@@ -70,6 +71,16 @@ const LandingPage = () => {
       icon: ShieldCheck,
       title: "Privacy First",
       description: "All processing is performed securely, ensuring your data and video feed remain protected and private."
+    },
+    {
+      icon: Zap,
+      title: "Emergency Mode",
+      description: "Quick communication bridge for critical situations, generating urgent messages from gestures."
+    },
+    {
+      icon: Activity,
+      title: "Learning Assistant",
+      description: "AI-powered practice sessions tailored to your progress to help you master sign language."
     }
   ];
 
@@ -112,17 +123,17 @@ const LandingPage = () => {
                 className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/60 backdrop-blur-md border border-white/40 text-brand-700 text-xs font-black uppercase tracking-[0.2em] mb-10 shadow-sm"
               >
                 <span className="flex h-2 w-2 rounded-full bg-brand-600 animate-ping"></span>
-                Next-Gen Neural Engine 3.0
+                Next-Gen AI System 3.0
               </motion.div>
               
               <h1 className="text-7xl lg:text-9xl font-black text-slate-900 leading-[0.85] mb-10 tracking-tighter">
                 AI-Powered <br />
-                <span className="text-brand-600">Sign Language</span> <br />
-                Translator
+                <span className="text-violet-600">Sign Language</span> <br />
+                Translator  
               </h1>
               
               <p className="text-xl text-slate-500 mb-14 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
-                SignLink bridges the communication gap by translating hand gestures into real-time text and speech. Empowering the global community through state-of-the-art neural vision.
+                SignLink helps people talk by turning hand signs into text and speech. Making communication easy for everyone using smart AI.
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
@@ -171,10 +182,9 @@ const LandingPage = () => {
                 >
                    <div className="glass-card p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-2xl border-white/20">
                       <div className="flex items-center gap-3 mb-4">
-                         <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)] animate-pulse"></div>
-                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Live Inference Active</span>
+                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">AI is Watching</span>
                       </div>
-                      <p className="text-3xl font-black text-slate-900 tracking-tighter leading-none italic">"Bridge the gap with SignLink"</p>
+                      <p className="text-3xl font-black text-slate-900 tracking-tighter leading-none italic">"Talk easily with SignLink"</p>
                    </div>
                 </motion.div>
               </div>
@@ -204,10 +214,9 @@ const LandingPage = () => {
             viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto mb-24"
           >
-            <div className="w-16 h-1.5 bg-brand-600 rounded-full mx-auto mb-8"></div>
-            <h2 className="text-5xl lg:text-6xl font-black text-slate-900 mb-8 tracking-tight">Powerful Core Modules</h2>
+            <h2 className="text-5xl lg:text-6xl font-black text-slate-900 mb-8 tracking-tight">Main Features</h2>
             <p className="text-xl text-slate-500 font-medium">
-              SignLink is engineered with precision neural vision and real-time synthesis to make communication natural.
+              SignLink uses smart AI to help you talk naturally with hand signs.
             </p>
           </motion.div>
 
@@ -230,12 +239,12 @@ const LandingPage = () => {
               transition={{ duration: 0.8 }}
               className="flex-1"
             >
-              <h2 className="text-5xl lg:text-7xl font-black text-slate-900 mb-12 tracking-tight">The Processing <br />Pipeline</h2>
+              <h2 className="text-5xl lg:text-7xl font-black text-slate-900 mb-12 tracking-tight">How It <br />Works</h2>
               <div className="space-y-12">
                 {[
-                  { step: "01", title: "Capture Node", description: "Initialize the optical node through any standard webcam device to begin stream capture." },
-                  { step: "02", title: "Neural Logic", description: "The AI engine performs high-frequency landmark analysis on hand motion vectors." },
-                  { step: "03", title: "Semantic Synthesis", description: "Inferences are mapped to linguistic patterns and synthesized into Urdu/English audio." }
+                  { step: "01", title: "Turn on Camera", description: "Start the camera on your phone or laptop to begin." },
+                  { step: "02", title: "Smart AI", description: "The AI looks at your hand movements and understands them." },
+                  { step: "03", title: "Text & Voice", description: "Your signs are turned into words and spoken in English or Urdu." }
                 ].map((item, i) => (
                   <motion.div 
                     key={i} 
@@ -294,19 +303,21 @@ const LandingPage = () => {
               <div className="absolute top-0 right-0 p-20 opacity-10">
                  <Hand size={300} />
               </div>
-              <h2 className="text-5xl lg:text-7xl font-black mb-10 tracking-tight relative z-10">Ready to break the <br />communication barrier?</h2>
+              <h2 className="text-5xl lg:text-7xl font-black mb-10 tracking-tight relative z-10">Ready to talk <br />with everyone?</h2>
               <p className="text-xl text-brand-100 mb-14 max-w-3xl mx-auto font-medium relative z-10">
-                Join thousands of users empowering themselves through advanced neural sign language translation. Start your journey today.
+                Join many people using our AI to talk with hand signs. Start today.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-6 relative z-10">
                  <Link to="/register">
-                    <Button size="lg" className="bg-white text-brand-600 hover:bg-slate-50 border-none px-16 h-20 rounded-[2rem] font-black uppercase tracking-widest shadow-2xl">
-                       Get Started Now
+                    <Button size="lg" className="bg-white text-slate-900 shadow-2xl hover:scale-105 transition-all">
+                       Start Free Now
                     </Button>
                  </Link>
-                 <Button variant="outline" size="lg" className="border-white/40 text-white hover:bg-white/10 px-16 h-20 rounded-[2rem] font-black uppercase tracking-widest">
-                    Contact Enterprise
-                 </Button>
+                 <Link to="/contact">
+                    <Button variant="outline" size="lg" className="border-white/60 text-white hover:bg-white/10 px-16 h-20 rounded-[2rem] font-black uppercase tracking-widest hover:scale-105 transition-all">
+                       Contact Us
+                    </Button>
+                 </Link>
               </div>
            </motion.div>
         </div>
@@ -348,9 +359,9 @@ const LandingPage = () => {
             <div>
               <h4 className="text-xl font-black mb-10 tracking-tight">Core Modules</h4>
               <ul className="space-y-6 text-slate-400 font-bold">
-                <li><Link to="/translate" className="hover:text-white transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-brand-600 group-hover:scale-150 transition-all"></div>Translator Engine</Link></li>
-                <li><Link to="/training" className="hover:text-white transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-brand-600 group-hover:scale-150 transition-all"></div>Custom Training</Link></li>
-                <li><Link to="/history" className="hover:text-white transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-brand-600 group-hover:scale-150 transition-all"></div>Activity Analytics</Link></li>
+                <li><Link to="/translate" className="hover:text-white transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-brand-600 group-hover:scale-150 transition-all"></div>Translator</Link></li>
+                <li><Link to="/training" className="hover:text-white transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-brand-600 group-hover:scale-150 transition-all"></div>Teach Signs</Link></li>
+                <li><Link to="/history" className="hover:text-white transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-brand-600 group-hover:scale-150 transition-all"></div>Past Signs</Link></li>
               </ul>
             </div>
             <div>

@@ -68,3 +68,42 @@ class ContactMessage(Base):
     message = Column(Text, nullable=False)
     status = Column(String(20), default="unread") # unread, read, archived
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class AIConversation(Base):
+    __tablename__ = "ai_conversations"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    raw_words = Column(Text) # JSON string of list
+    enhanced_text = Column(Text)
+    language = Column(String(10))
+    mode = Column(String(50)) # natural, emergency, grammar
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class LearningProgress(Base):
+    __tablename__ = "learning_progress"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    gesture_id = Column(Integer, ForeignKey("gestures.id"), nullable=True)
+    gesture_name = Column(String(100))
+    status = Column(String(50)) # mastered, in_progress, started
+    attempts = Column(Integer, default=0)
+    best_confidence = Column(Float, default=0.0)
+    last_practiced = Column(DateTime, default=datetime.utcnow)
+
+class EmergencyLog(Base):
+    __tablename__ = "emergency_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    gestures_detected = Column(Text)
+    generated_sentence = Column(Text)
+    location_json = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class ConfidenceLog(Base):
+    __tablename__ = "confidence_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    gesture_name = Column(String(100))
+    confidence_score = Column(Float)
+    is_correct = Column(Integer, default=1) # 1 for correct, 0 for incorrect feedback
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -98,4 +98,8 @@ export const contactAPI = {
   updateStatus: (id, status) => api.put(`/contact/${id}/status`, { status }),
 };
 
+export const adminAPI = {
+  getSystemStats: () => api.get('/admin/system-stats'),
+};
+
 export default api;

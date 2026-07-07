@@ -22,7 +22,8 @@ import {
   Mic,
   ArrowRight,
   Layout,
-  Clock
+  Clock,
+  Sparkles
 } from 'lucide-react';
 import Webcam from 'react-webcam';
 import toast from 'react-hot-toast';
@@ -30,6 +31,7 @@ import AppLayout from '../layouts/AppLayout';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { recognitionAPI, toolsAPI, historyAPI, translationsAPI } from '../services/api';
+import aiService from '../services/aiService';
 
 const LiveTranslator = () => {
   const [isCameraOn, setIsCameraOn] = useState(false);
@@ -47,6 +49,8 @@ const LiveTranslator = () => {
   const [predefinedGestures, setPredefinedGestures] = useState([]);
   const [stability, setStability] = useState(0);
   const [isPredefinedMatch, setIsPredefinedMatch] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [grammarMode, setGrammarMode] = useState(false);
   
   // UI Preferences
   const [language, setLanguage] = useState('English');
@@ -131,6 +135,19 @@ const LiveTranslator = () => {
     } catch (err) {}
   };
 
+  const handleAiEnhance = async () => {
+    if (!autoSentence) return;
+    setIsEnhancing(true);
+    const words = autoSentence.split(' ');
+    const mode = grammarMode ? 'grammar' : 'natural';
+    const langCode = language === 'Urdu' ? 'ur' : 'en';
+    
+    const result = await aiService.enhanceSentence(words, langCode, mode);
+    setAutoSentence(result.enhanced_text);
+    setIsEnhancing(false);
+    toast.success("AI Enhancement Complete");
+  };
+
   const speakText = (text) => {
     if (!text) return;
     const utterance = new SpeechSynthesisUtterance(text);
@@ -193,7 +210,7 @@ const LiveTranslator = () => {
 
                     <div className="absolute inset-x-0 bottom-0 p-10 bg-gradient-to-t from-black/95 via-black/40 to-transparent z-10">
                        <div className="flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
-                          <div className="px-5 py-2 bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl text-[10px] font-black text-brand-300 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                          <div className="px-5 py-2 bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl text-[10px] font-black text-brand-300 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
                              <Zap size={14} className={isDetecting ? 'text-brand-400' : 'text-slate-500'} />
                              {isDetecting ? (
                                 <span>Conf: {isNaN(confidence) ? 0 : Math.round(confidence * 100)}% • Stab: {Math.round(stability * 100)}% • {predType}</span>
@@ -201,6 +218,21 @@ const LiveTranslator = () => {
                                 "Initialize processing to begin recognition"
                              )}
                           </div>
+                          
+                          {/* Confidence Indicator */}
+                          {isDetecting && (
+                            <div className="w-48 mb-6">
+                              <div className="confidence-bar-container">
+                                <div 
+                                  className={`confidence-bar-fill ${confidence > 0.8 ? 'confidence-high' : confidence > 0.5 ? 'confidence-medium' : 'confidence-low'}`}
+                                  style={{ width: `${confidence * 100}%` }}
+                                ></div>
+                              </div>
+                              <p className="text-[10px] text-white/50 mt-1 font-bold tracking-widest uppercase text-center">
+                                Gesture Confidence: {Math.round(confidence * 100)}%
+                              </p>
+                            </div>
+                          )}
                           
                           <div className="relative mb-6">
                              <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter drop-shadow-2xl UrduFont">
@@ -234,10 +266,10 @@ const LiveTranslator = () => {
              <CardFooter className="bg-white p-8 flex flex-wrap items-center justify-between gap-6 border-t border-slate-50">
                 <div className="flex items-center gap-4">
                    <Button onClick={toggleCamera} variant={isCameraOn ? 'outline' : 'primary'} className="rounded-2xl px-8 h-14 font-black uppercase text-[10px] tracking-widest transition-all">
-                      {isCameraOn ? <><CameraOff size={18} className="mr-3" /> Shutdown Optics</> : <><Camera size={18} className="mr-3" /> Initialize Optics</>}
+                      {isCameraOn ? <><CameraOff size={18} className="mr-3" /> Turn off Camera</> : <><Camera size={18} className="mr-3" /> Open Camera</>}
                    </Button>
                    <Button onClick={isDetecting ? stopDetection : startDetection} disabled={!isCameraOn} className={`rounded-2xl px-10 h-14 font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all active:scale-95 ${isDetecting ? 'bg-rose-500 hover:bg-rose-600 shadow-rose-200' : 'bg-brand-600 hover:bg-brand-700 shadow-brand-200'}`}>
-                      {isDetecting ? <><Square size={18} className="mr-3" /> Terminate Engine</> : <><Zap size={18} className="mr-3" /> Launch Neural Engine</>}
+                      {isDetecting ? <><Square size={18} className="mr-3" /> Stop AI</> : <><Zap size={18} className="mr-3" /> Start AI System</>}
                    </Button>
                 </div>
 
@@ -260,7 +292,7 @@ const LiveTranslator = () => {
              <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-row items-center justify-between p-8">
                 <div className="flex items-center gap-3">
                    <ShieldCheck size={20} className="text-emerald-600" />
-                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Inference Probabilities</h3>
+                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">AI Results</h3>
                 </div>
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-300 shadow-sm">
                    <Layout size={18} />
@@ -271,9 +303,9 @@ const LiveTranslator = () => {
                    <table className="w-full text-left border-collapse">
                       <thead>
                          <tr className="bg-slate-50/30">
-                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Candidate Signature</th>
-                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Neural Score</th>
-                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Protocol</th>
+                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Gesture Name</th>
+                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">AI Score</th>
+                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Mode</th>
                          </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-50">
@@ -315,7 +347,7 @@ const LiveTranslator = () => {
               <CardHeader className="bg-slate-900 text-white p-8 flex flex-row items-center justify-between">
                  <div className="flex items-center gap-3">
                     <Type size={20} className="text-brand-400" />
-                    <h3 className="text-xs font-black uppercase tracking-widest text-brand-100">Sentence Builder</h3>
+                    <h3 className="text-xs font-black uppercase tracking-widest text-brand-100">Sentences</h3>
                  </div>
                  <button onClick={handleClear} className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-brand-400 hover:bg-rose-500 hover:text-white transition-all">
                     <Trash2 size={18} />
@@ -336,15 +368,38 @@ const LiveTranslator = () => {
                  </div>
                  
                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                       <Button 
+                         onClick={handleAiEnhance} 
+                         disabled={!autoSentence || isEnhancing} 
+                         className="flex-1 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs h-12"
+                       >
+                         {isEnhancing ? (
+                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                         ) : (
+                           <div className="flex items-center justify-center gap-2">
+                              <Sparkles size={16} />
+                              <span>Fix Sentence</span>
+                           </div>
+                         )}
+                       </Button>
+                       <button 
+                         onClick={() => setGrammarMode(!grammarMode)}
+                         title="Grammar Mode"
+                         className={`px-4 rounded-2xl border-2 transition-all h-12 ${grammarMode ? 'bg-brand-100 border-brand-500 text-brand-700' : 'bg-slate-50 border-slate-200 text-slate-400'}`}
+                       >
+                         <CheckCircle2 className="w-5 h-5" />
+                       </button>
+                    </div>
                     <Button onClick={() => speakText(autoSentence)} disabled={!autoSentence} className="w-full rounded-[2rem] py-8 font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-500/20 active:scale-95 transition-all">
-                       <Volume2 size={24} className="mr-3" /> Execute Speech
+                       <Volume2 size={24} className="mr-3" /> Speak Now
                     </Button>
                     <div className="grid grid-cols-2 gap-4">
                        <Button variant="outline" onClick={() => {
                           navigator.clipboard.writeText(autoSentence);
                           toast.success("Sentence stored in clipboard");
                        }} disabled={!autoSentence} className="rounded-[1.5rem] h-16 text-[10px] font-black uppercase tracking-[0.2em]">
-                          <Copy size={18} className="mr-2" /> Copy Buffer
+                          <Copy size={18} className="mr-2" /> Copy Text
                        </Button>
                        <Button variant="secondary" onClick={async () => {
                           try {
@@ -360,7 +415,7 @@ const LiveTranslator = () => {
                              toast.error("Database sync failed");
                           }
                        }} disabled={!autoSentence} className="rounded-[1.5rem] h-16 text-[10px] font-black uppercase tracking-[0.2em] bg-slate-900 text-white border-none hover:bg-slate-800">
-                          <Save size={18} className="mr-2" /> Sync Log
+                          <Save size={18} className="mr-2" /> Save Log
                        </Button>
                     </div>
                  </div>

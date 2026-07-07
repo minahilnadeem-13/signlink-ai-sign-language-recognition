@@ -32,11 +32,16 @@ CREATE DATABASE signlink_db;
    cp .env.example .env
    # Edit .env: DATABASE_URL=mysql+pymysql://root:password@localhost:3306/signlink_db
    ```
-4. **Run Server**:
+4. **Create / Migrate Database**:
    ```bash
-   uvicorn app.main:app --reload
+   python manage.py migrate
    ```
-   *Note: Tables will be created automatically on the first run.*
+   This will create the database (if needed) and create all tables from the SQLAlchemy models.
+5. **Run Server**:
+   ```bash
+   python -m uvicorn app.main:app --reload
+   ```
+   *Note: Tables are also verified automatically on startup by the backend.*
 
 ## API Documentation
 Once running, access the docs at:

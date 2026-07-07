@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     DATABASE_URL: str = os.getenv("DATABASE_URL", "mysql+pymysql://root:password@localhost:3306/signlink_db")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     
     STATIC_DIR: str = "static"
     AUDIO_DIR: str = "static/audio"
